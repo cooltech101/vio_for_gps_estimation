@@ -2,8 +2,8 @@
 
 
 ## 1. Create new target directory and virtual environment
-'''mkdir basalt-vio &
+```mkdir basalt-vio &
 cd basalt-vio &
 python3 -m venv venv &
 source venv/bin/activate &
-'''
+```
