@@ -21,3 +21,12 @@ git clone https://github.com/luxonis/depthai-core.git && cd depthai-core
 ```
 python3 examples/python/install_requirements.py
 ```
+
+## 4. To run Basalt
+### Headless mode (default)
+```
+python3 basalt_vio.py
+```
+### With rerun visualizer
+```
+python3 basalt_vio.py --rerun
