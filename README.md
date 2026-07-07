@@ -20,16 +20,16 @@ git clone https://github.com/luxonis/depthai-core.git && cd depthai-core
 python3 examples/python/install_requirements.py
 ```
 ## 4. Run Basalt independently
-### Headless mode (default)
+Headless mode (default)
 ```
 python3 basalt_vio.py
 ```
-### With rerun visualizer GUI
+With rerun visualizer GUI
 ```
 python3 basalt_vio.py --rerun
 ```
 ## 5. Helper scripts
-### Print received GPS coordinates to terminal. (Connect flight controller debug port to Raspi via USB first)
+Print received GPS coordinates to terminal. (Connect flight controller debug port to Raspi via USB first)
 ```
 python3 read_gps_yaw.py
 ```
