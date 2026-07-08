@@ -10,11 +10,11 @@ source venv/bin/activate
 ```
 ## 2. Clone this repo and install packages
 ```
-git clone https://github.com/cooltech101/vio_for_gps_estimation && pip install -r vio_for_gps_estimation/requirements.txt
+git clone https://github.com/cooltech101/vio_for_gps_estimation . && pip install -r requirements.txt
 ```
 ## 3. Install DepthAI
 ```
-cd vio_for_gps_estimation && git clone https://github.com/luxonis/depthai-core.git && cd depthai-core
+git clone https://github.com/luxonis/depthai-core.git && cd depthai-core
 ```
 ```
 python3 examples/python/install_requirements.py && cd ..
