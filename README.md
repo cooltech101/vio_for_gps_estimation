@@ -17,7 +17,7 @@ git clone https://github.com/cooltech101/vio_for_gps_estimation && pip install -
 cd vio_for_gps_estimation && git clone https://github.com/luxonis/depthai-core.git && cd depthai-core
 ```
 ```
-python3 examples/python/install_requirements.py
+python3 examples/python/install_requirements.py && cd ..
 ```
 ## 4. Run Basalt VIO independently
 Headless mode (default)
