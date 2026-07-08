@@ -60,5 +60,7 @@ To print GPS coordinates only
 ```
 python3 read_gps.py
 ```
+## 8. Notes
+If VIO was run earlier, object tracking will fail because old depthAI pipeline is still active. Reboot host controller, then run object tracking. 
 
 
