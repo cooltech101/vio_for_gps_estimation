@@ -1,18 +1,16 @@
 # Basalt VIO for GPS 2D Pose Estimation
 Use OAK-D wide stereo camera to conduct Visual Inertial Odometry and simple object detection. 
 
-## 1. Create new target directory and virtual environment
+## 1. Create new target directory and clone repo
 ```
 mkdir basaltVio &&
 cd basaltVio &&
+git clone https://github.com/cooltech101/vio_for_gps_estimation.git .
+```
+## 2. Create new virtual environment and install packages
+```
 python3 -m venv venv &&
-source venv/bin/activate
-```
-## 2. Clone repo into current directory and install packages
-```
-git clone https://github.com/cooltech101/vio_for_gps_estimation.git /tmp/vio_for_gps_estimation &&
-cp -a /tmp/vio_for_gps_estimation/. . &&
-rm -rf /tmp/vio_for_gps_estimation &&
+source venv/bin/activate &&
 pip install -r requirements.txt
 ```
 ## 3. Install DepthAI
