@@ -31,11 +31,11 @@ python3 basalt_vio.py --rerun
 ```
 ## 5. Use Basalt VIO to estimate GPS pose (2D)
 
-Run `basalt_vio.py`. Listen for VIO pose packets over Mavlink socket. Manually set starting lat lon and heading in lines 17-19 and use these values to initialise VIO. Log estimated GPS pose entries to csv file of choice using --csv flag. No flight controller or GPS module needed. 
+Run `basalt_vio.py`. Listen for VIO pose packets over Mavlink socket. Manually set starting lat lon and heading in lines 17-19 and use these values to initialise VIO. Using initialisation, script converts local xy coordinates into GPS lat lon coordinates in decimal degrees. Log estimated GPS pose entries to csv file of choice using --csv flag. No flight controller or GPS module needed. 
 ```
 python3 basalt_vio.py & python3 vio_translate_logger.py --csv newLog.csv
 ```
-Run `basalt_vio.py`. Upon startup, average first few GPS readings to determine starting pose. Use this pose as initial VIO offset. Listen for VIO pose packets over Mavlink socket. Log live GPS and heading for each VIO estimate and log entries to csv file of choice using --csv flag. Flight controller and GPS module needed. 
+Run `basalt_vio.py`. Upon startup, average first few GPS readings to determine starting pose. Use this pose as initial VIO offset. Listen for VIO pose packets over Mavlink socket. Log live GPS and heading for each VIO-derived GPS estimate and log entries to csv file of choice using --csv flag. Flight controller and GPS module needed. 
 ```
 python3 basalt_vio.py & python3 vio_gps_logger.py --csv newLog.csv
 ```
