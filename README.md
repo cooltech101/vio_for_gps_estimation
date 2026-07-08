@@ -29,7 +29,8 @@ With rerun visualizer GUI
 python3 basalt_vio.py --rerun
 ```
 ## 5. Use Basalt VIO to estimate GPS pose (2D)
-Run simultaneously with `basalt_vio.py`
+Run these simultaneously with `basalt_vio.py`
+
 Listen for VIO pose packets over Mavlink socket. Estimate GPS pose based on starting lat lon and heading manually set in line 17-19. Log entries to csv file of choice using --csv flag. No flight controller needed.
 ```
 python3 vio_translate_logger.py & python3 basalt_vio.py
