@@ -29,16 +29,19 @@ With rerun visualizer GUI
 python3 basalt_vio.py --rerun
 ```
 ## 5. Use Basalt VIO to estimate GPS pose (2D)
-Run these simultaneously with `basalt_vio.py`
 
-Listen for VIO pose packets over Mavlink socket. Estimate GPS pose based on starting lat lon and heading manually set in line 17-19. Log entries to csv file of choice using --csv flag. No flight controller needed.
+Run `basalt_vio.py`. Listen for VIO pose packets over Mavlink socket. Manually set starting lat lon and heading in lines 17-19 and use these values to initialise VIO. Log estimated GPS pose entries to csv file of choice using --csv flag. No flight controller needed.
 ```
-python3 vio_translate_logger.py & python3 basalt_vio.py
+python3 basalt_vio.py & python3 vio_translate_logger.py
 ```
-Flight controller needed. Upon startup, average first few GPS readings to determine starting pose. Use this pose as initial VIO offset. Log live GPS and heading at each VIO estimate and log entries to csv file of choice using --csv flag.
+Run `basalt_vio.py`. Upon startup, average first few GPS readings to determine starting pose. Use this pose as initial VIO offset. Listen for VIO pose packets over Mavlink socket. Log live GPS and heading for each VIO estimate and log entries to csv file of choice using --csv flag. Flight controller needed. 
 ```
-python3 vio_gps_logger.py & python3 basalt_vio.py
+python3 basalt_vio.py & python3 vio_gps_logger.py
 ```
+Optional: use startall.sh to conveniently run `basalt_vio.py` and `vio_gps_logger.py` at the same time. Default output csv `dataLog.csv`. Shell script will cleanly terminate the processes upon interruption via Ctrl+C.
+```
+./startall.sh
+```  
 ## 6. Helper scripts
 Print received GPS coordinates and IMU yaw to terminal. (Connect flight controller debug port to Raspi via USB first)
 ```
