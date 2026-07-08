@@ -1,7 +1,0 @@
-depthai>=3.7.0
-rerun-sdk>=0.33.0
-opencv-python
-geographiclib
-pymavlink>=2.4.49
-pyserial
-MAVProxy
