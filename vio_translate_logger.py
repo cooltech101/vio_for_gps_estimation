@@ -9,8 +9,8 @@ Usage:
     python3 listen_basalt_vio.py
 
 Optional:
-    python3 listen_and_log.py --socket /tmp/basalt_vio_listener
-    python3 listen_and_log.py --csv basalt_vio_latlonalt.csv
+    python3 vio_translate_logger.py --socket /tmp/basalt_vio_listener
+    python3 vio_translate_logger.py --csv vioLog.csv
 """
 import math
 
@@ -33,7 +33,7 @@ _geodesic = Geodesic.WGS84
 
 
 DEFAULT_SOCK = "/tmp/basalt_vio_listener"
-DEFAULT_CSV = "basalt_vio_latlonalt.csv"
+DEFAULT_CSV = "vioDataLog.csv"
 
 running = True
 

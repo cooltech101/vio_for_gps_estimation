@@ -42,7 +42,16 @@ Optional: use `startall.sh` to conveniently run `basalt_vio.py` and `vio_gps_log
 ```
 ./startall.sh
 ```  
-## 6. Helper scripts
+## 6. Run simple object tracking
+YOLOv6-nano run on OAK-D with visualizer.
+```
+python3 object_tracker.py
+```
+Run object tracking and VIO estimation simultaneously.
+```
+python3 vio_objtrack.py
+```
+## 7. Helper scripts
 Print received GPS coordinates and IMU yaw to terminal. Flight controller and GPS module needed. 
 ```
 python3 read_gps_yaw.py
