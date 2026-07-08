@@ -29,7 +29,13 @@ With rerun visualizer GUI
 python3 basalt_vio.py --rerun
 ```
 ## 5. Helper scripts
-Print received GPS coordinates to terminal. (Connect flight controller debug port to Raspi via USB first)
+Print received GPS coordinates and IMU yaw to terminal. (Connect flight controller debug port to Raspi via USB first)
 ```
 python3 read_gps_yaw.py
 ```
+To print GPS coordinates only
+```
+python3 read_gps.py
+```
+
+
