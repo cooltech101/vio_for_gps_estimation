@@ -30,20 +30,20 @@ python3 basalt_vio.py --rerun
 ```
 ## 5. Use Basalt VIO to estimate GPS pose (2D)
 
-Run `basalt_vio.py`. Listen for VIO pose packets over Mavlink socket. Manually set starting lat lon and heading in lines 17-19 and use these values to initialise VIO. Log estimated GPS pose entries to csv file of choice using --csv flag. No flight controller needed.
+Run `basalt_vio.py`. Listen for VIO pose packets over Mavlink socket. Manually set starting lat lon and heading in lines 17-19 and use these values to initialise VIO. Log estimated GPS pose entries to csv file of choice using --csv flag. No flight controller or GPS module needed. 
 ```
-python3 basalt_vio.py & python3 vio_translate_logger.py
+python3 basalt_vio.py & python3 vio_translate_logger.py --csv newLog.csv
 ```
-Run `basalt_vio.py`. Upon startup, average first few GPS readings to determine starting pose. Use this pose as initial VIO offset. Listen for VIO pose packets over Mavlink socket. Log live GPS and heading for each VIO estimate and log entries to csv file of choice using --csv flag. Flight controller needed. 
+Run `basalt_vio.py`. Upon startup, average first few GPS readings to determine starting pose. Use this pose as initial VIO offset. Listen for VIO pose packets over Mavlink socket. Log live GPS and heading for each VIO estimate and log entries to csv file of choice using --csv flag. Flight controller and GPS module needed. 
 ```
-python3 basalt_vio.py & python3 vio_gps_logger.py
+python3 basalt_vio.py & python3 vio_gps_logger.py --csv newLog.csv
 ```
-Optional: use startall.sh to conveniently run `basalt_vio.py` and `vio_gps_logger.py` at the same time. Default output csv `dataLog.csv`. Shell script will cleanly terminate the processes upon interruption via Ctrl+C.
+Optional: use `startall.sh` to conveniently run `basalt_vio.py` and `vio_gps_logger.py` at the same time. Default output csv `dataLog.csv`. Shell script will cleanly terminate the processes upon interruption via Ctrl+C.
 ```
 ./startall.sh
 ```  
 ## 6. Helper scripts
-Print received GPS coordinates and IMU yaw to terminal. (Connect flight controller debug port to Raspi via USB first)
+Print received GPS coordinates and IMU yaw to terminal. Flight controller and GPS module needed. 
 ```
 python3 read_gps_yaw.py
 ```
