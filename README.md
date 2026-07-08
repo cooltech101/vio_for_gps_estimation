@@ -8,9 +8,12 @@ cd basaltVio &&
 python3 -m venv venv &&
 source venv/bin/activate
 ```
-## 2. Clone this repo and install packages
+## 2. Clone repo into current directory and install packages
 ```
-git clone https://github.com/cooltech101/vio_for_gps_estimation . && pip install -r requirements.txt
+git clone https://github.com/cooltech101/vio_for_gps_estimation.git /tmp/vio_for_gps_estimation &&
+cp -a /tmp/vio_for_gps_estimation/. . &&
+rm -rf /tmp/vio_for_gps_estimation &&
+pip install -r requirements.txt
 ```
 ## 3. Install DepthAI
 ```
