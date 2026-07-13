@@ -5,3 +5,6 @@ geographiclib
 pymavlink>=2.4.49
 pyserial
 MAVProxy
+future
+transformations
+apscheduler

@@ -2,3 +2,7 @@ depthai-core/
 venv/
 .cache/
 .depthai_cached_models/
+mav.parm
+mav.tlog
+mav.tlog.raw
+test/
