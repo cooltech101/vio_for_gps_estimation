@@ -30,16 +30,10 @@ With rerun visualizer GUI
 python3 basalt_vio.py --rerun
 ```
 ### Indoor Office Test
-Methodology:
-- Exact same start and end pose
-- Use pseudo GPS coordinates to initialise VIO
-- Use geographiclib to convert VIO local xyz pose to global lat lon alt (GPS) coordinates
-
-Observations:
+- Distance covered: 163.5m
+- 3D VIO drift: 0.7153m (0.437%)
 - ~20Hz average update rate
-- ~0.44% total 3D drift
-- Robust VIO-GPS transform
-<img src="vioPlots/indoor1.png" alt="Photo" width="50%">
+<img src="vioPlots/indoor1.png" alt="Photo" width="45%">
 
 ## 5. Use Basalt VIO to estimate GPS pose (2D)
 
@@ -55,6 +49,15 @@ Optional: use `startall.sh` to conveniently run `basalt_vio.py` and `vio_gps_log
 ```
 ./startall.sh
 ```  
+### Outdoor Test 1
+Distance covered: 333m
+<img src="vioPlots/outdoor2.png" alt="Photo" width="45%">
+
+### Outdoor Test 2
+Distance covered: 507m
+<img src="vioPlots/outdoor1.png" alt="Photo" width="45%">
+
+
 ## 6. Run simple object tracking
 YOLOv6-nano run on OAK-D with visualizer.
 ```
