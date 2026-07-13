@@ -29,6 +29,17 @@ With rerun visualizer GUI
 ```
 python3 basalt_vio.py --rerun
 ```
+### Indoor Office Test
+Methodology:
+- Exact same start and end pose
+- Use pseudo GPS coordinates to initialise VIO
+- Use geographiclib to convert VIO local xyz pose to global lat lon alt (GPS) coordinates
+Observations:
+- ~20Hz average update rate
+- ~0.44% total 3D drift
+- Robust VIO-GPS transform
+![Screenshot](vioPlots/indoor1.png)
+
 ## 5. Use Basalt VIO to estimate GPS pose (2D)
 
 Run `basalt_vio.py`. Listen for VIO pose packets over Mavlink socket. Manually set starting lat lon and heading in lines 17-19 and use these values to initialise VIO. Using initialisation, script converts local xy coordinates into GPS lat lon coordinates in decimal degrees. Log estimated GPS pose entries to csv file of choice using --csv flag. No flight controller or GPS module needed. 
