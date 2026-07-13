@@ -34,11 +34,12 @@ Methodology:
 - Exact same start and end pose
 - Use pseudo GPS coordinates to initialise VIO
 - Use geographiclib to convert VIO local xyz pose to global lat lon alt (GPS) coordinates
+
 Observations:
 - ~20Hz average update rate
 - ~0.44% total 3D drift
 - Robust VIO-GPS transform
-<img src="vioPlots/indoor1.png" alt="Photo" width="30%">
+<img src="vioPlots/indoor1.png" alt="Photo" width="50%">
 
 ## 5. Use Basalt VIO to estimate GPS pose (2D)
 
