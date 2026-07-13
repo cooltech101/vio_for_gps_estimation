@@ -51,10 +51,12 @@ Optional: use `startall.sh` to conveniently run `basalt_vio.py` and `vio_gps_log
 ```  
 ### Outdoor Test 1
 Distance covered: 333m
+
 <img src="vioPlots/outdoor2.png" alt="Photo" width="45%">
 
 ### Outdoor Test 2
 Distance covered: 507m
+
 <img src="vioPlots/outdoor1.png" alt="Photo" width="45%">
 
 
