@@ -38,7 +38,7 @@ Observations:
 - ~20Hz average update rate
 - ~0.44% total 3D drift
 - Robust VIO-GPS transform
-<img src="vioPlot/indoor1.png" alt="Photo" width="30%">
+<img src="vioPlots/indoor1.png" alt="Photo" width="30%">
 
 ## 5. Use Basalt VIO to estimate GPS pose (2D)
 
