@@ -6,3 +6,4 @@ mav.parm
 mav.tlog
 mav.tlog.raw
 test/
+__pycache__/

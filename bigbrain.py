@@ -50,20 +50,9 @@ connection_string_default = '/dev/ttyAMA0'
 connection_baudrate_default = 921600
 connection_timeout_sec_default = 5
 
-# Transformation to convert different camera orientations to NED convention. Replace camera_orientation_default for your configuration.
-#   0: Forward, camera oriented standardly
-#   1: Downfacing, camera top pointing towards the right
-#   2: Forward, 45 degree tilted down
-#   3: Downfacing, camera top pointing towards the back
-camera_orientation_default = 0
-
 # https://mavlink.io/en/messages/common.html#VISION_POSITION_ESTIMATE
 enable_msg_vision_position_estimate = True
 vision_position_estimate_msg_hz_default = 30.0
-
-# https://mavlink.io/en/messages/ardupilotmega.html#VISION_POSITION_DELTA
-enable_msg_vision_position_delta = False
-vision_position_delta_msg_hz_default = 30.0
 
 # https://mavlink.io/en/messages/common.html#VISION_SPEED_ESTIMATE
 enable_msg_vision_speed_estimate = True
@@ -82,17 +71,8 @@ home_lat = 1    # Somewhere random
 home_lon = 103     # Somewhere random
 home_alt = 10       # Somewhere random
 
-# In NED frame, offset from the IMU or the center of gravity to the camera's origin point
-body_offset_enabled = 0
-body_offset_x = 0  # In meters (m)
-body_offset_y = 0  # In meters (m)
-body_offset_z = 0  # In meters (m)
-
 # Global scale factor, position x y z will be scaled up/down by this factor
 scale_factor = 1.0
-
-# Enable using yaw from compass to align north (zero degree is facing north)
-compass_enabled = 0
 
 # pose data confidence: 0x0 - Failed / 0x1 - Low / 0x2 - Medium / 0x3 - High 
 pose_data_confidence_level = ('FAILED', 'Low', 'Medium', 'High')
@@ -110,9 +90,7 @@ exit_code = 1
 linear_accel_cov = 0.01
 angular_vel_cov  = 0.01
 
-H_aeroRef_aeroBody = None
 V_aeroRef_aeroBody = None
-heading_north_yaw = None
 current_confidence_level = 100.0
 current_time_us = 0
 raw_px = raw_py = raw_pz = 0.0
@@ -131,11 +109,7 @@ reset_counter = 1
 parser = argparse.ArgumentParser(description='OAK-D VIO MAVLink Bridge')
 parser.add_argument('--connect', help="Vehicle connection target string.")
 parser.add_argument('--baudrate', type=float, help="Vehicle connection baudrate.")
-parser.add_argument('--vision_position_estimate_msg_hz', type=float)
-parser.add_argument('--vision_position_delta_msg_hz', type=float)
-parser.add_argument('--vision_speed_estimate_msg_hz', type=float)
 parser.add_argument('--scale_calib_enable', default=False, action='store_true')
-parser.add_argument('--camera_orientation', type=int)
 parser.add_argument('--debug_enable',type=int)
 parser.add_argument('--socket', default=DEFAULT_SOCK, help=f"Unix datagram socket path. Default: {DEFAULT_SOCK}")
 
@@ -143,25 +117,14 @@ args = parser.parse_args()
 
 connection_string = args.connect or connection_string_default
 connection_baudrate = args.baudrate or connection_baudrate_default
-vision_position_estimate_msg_hz = args.vision_position_estimate_msg_hz or vision_position_estimate_msg_hz_default
-vision_position_delta_msg_hz = args.vision_position_delta_msg_hz or vision_position_delta_msg_hz_default
-vision_speed_estimate_msg_hz = args.vision_speed_estimate_msg_hz or vision_speed_estimate_msg_hz_default
+vision_position_estimate_msg_hz = vision_position_estimate_msg_hz_default
+vision_speed_estimate_msg_hz = vision_speed_estimate_msg_hz_default
 scale_calib_enable = args.scale_calib_enable
-camera_orientation = args.camera_orientation or camera_orientation_default
 debug_enable = args.debug_enable or 0
 sock_path = args.socket
 
-H_aeroRef_OAKRef   = np.array([[0,0,-1,0],[1,0,0,0],[0,-1,0,0],[0,0,0,1]])
-if camera_orientation == 0:     
-    H_OAKbody_aeroBody = np.linalg.inv(H_aeroRef_OAKRef)
-elif camera_orientation == 1:   
-    H_OAKbody_aeroBody = np.array([[0,1,0,0],[1,0,0,0],[0,0,-1,0],[0,0,0,1]])
-elif camera_orientation == 2:   
-    H_OAKbody_aeroBody = (tf.euler_matrix(m.pi/4, 0, 0)).dot(np.linalg.inv(H_aeroRef_OAKRef))
-elif camera_orientation == 3:   
-    H_OAKbody_aeroBody = np.array([[-1,0,0,0],[0,1,0,0],[0,0,-1,0],[0,0,0,1]])
-else:                           
-    H_OAKbody_aeroBody = np.linalg.inv(H_aeroRef_OAKRef)
+H_aeroRef_OAKRef = np.array([[0,1,0,0],[1,0,0,0],[0,0,-1,0],[0,0,0,1]])
+H_OAKBody_aeroBody = np.linalg.inv(H_aeroRef_OAKRef)
 
 if debug_enable == 1:
     np.set_printoptions(precision=4, suppress=True)
@@ -190,15 +153,23 @@ def send_vision_position_estimate_message():
         if not vision_data_ready:
             return # Don't send anything until the first packet arrives
 
-        # -------- EXPLICIT MANUAL NED MAPPING --------
-        X = raw_py       # bas_y increases forward -> NED X
-        Y = raw_px       # bas_x increases right -> NED Y
-        Z = -raw_pz      # bas_z increases up -> NED Z goes down
-        
-        YAW = -raw_yaw + (m.pi / 2)   # bas_yaw increases CCW -> NED Yaw CW
-        PITCH = -raw_roll  
-        ROLL  = raw_pitch  
-        # ---------------------------------------------
+        # -------- CONSISTENT NED TRANSFORM (position + attitude) --------
+        # H_aeroRef_OAKRef encodes the verified Basalt axes (bas_x=right,
+        # bas_y=forward, bas_z=up). Rebuild the body rotation from the
+        # already-decomposed Euler angles (exact inverse of euler_from_matrix
+        # with the same 'rzyx' convention), attach the raw position as the
+        # translation, then conjugate by H_aeroRef_OAKRef so position and
+        # attitude go through the SAME frame transform as the velocity does.
+        H_OAKRef_OAKBody = tf.euler_matrix(raw_yaw, raw_pitch, raw_roll, 'rzyx')
+        H_OAKRef_OAKBody[0][3] = raw_px
+        H_OAKRef_OAKBody[1][3] = raw_py
+        H_OAKRef_OAKBody[2][3] = raw_pz
+
+        H_aeroRef_aeroBody = H_aeroRef_OAKRef.dot(H_OAKRef_OAKBody).dot(H_OAKBody_aeroBody)
+
+        X, Y, Z = H_aeroRef_aeroBody[0][3], H_aeroRef_aeroBody[1][3], H_aeroRef_aeroBody[2][3]
+        YAW, PITCH, ROLL = tf.euler_from_matrix(H_aeroRef_aeroBody, 'rzyx')
+        # ------------------------------------------------------------------
         
         cov_pose = linear_accel_cov * pow(10, 3 - tracker_confidence)
         cov_twist = angular_vel_cov * pow(10, 1 - tracker_confidence)
@@ -217,66 +188,6 @@ def send_vision_position_estimate_message():
             reset_counter               
         )
 
-
-
-
-
-# TEMPORARY
-def send_test_vision_position_estimate_message():
-    global current_time_us, reset_counter
-    with lock:
-        # Generate our own timestamp since we are skipping the socket listener
-        current_time_us = int(round(time.time() * 1000000))
-        
-        # Hardcode x, y, z, and yaw to 10
-        x, y, z = 10.0, 10.0, 10.0
-        roll, pitch = 0.0, 0.0
-        
-        # NOTE: MAVLink expects radians. 
-        # A value of 10 radians will wrap around, but for raw packet inspection, it works. 
-        # If you want exactly 10 degrees to show up in the yaw field, use `m.radians(10)` instead.
-        yaw = 10.0 
-        
-        # Create dummy covariance
-        cov_pose    = linear_accel_cov * pow(10, 3 - tracker_confidence)
-        cov_twist   = angular_vel_cov  * pow(10, 1 - tracker_confidence)
-        covariance  = np.array([cov_pose, 0, 0, 0, 0, 0,
-                                   cov_pose, 0, 0, 0, 0,
-                                      cov_pose, 0, 0, 0,
-                                        cov_twist, 0, 0,
-                                           cov_twist, 0,
-                                              cov_twist])
-
-        # Force send the message
-        conn.mav.vision_position_estimate_send(
-            current_time_us,            
-            x,   
-            y,   
-            z,   
-            roll,	                
-            pitch,	                
-            yaw,	                
-            covariance,                 
-            reset_counter               
-        )
-
-
-def send_vision_position_delta_message():
-    global current_time_us, current_confidence_level, H_aeroRef_aeroBody
-    with lock:
-        if H_aeroRef_aeroBody is not None:
-            H_aeroRef_PrevAeroBody      = send_vision_position_delta_message.H_aeroRef_PrevAeroBody
-            H_PrevAeroBody_CurrAeroBody = (np.linalg.inv(H_aeroRef_PrevAeroBody)).dot(H_aeroRef_aeroBody)
-
-            delta_time_us    = current_time_us - send_vision_position_delta_message.prev_time_us
-            delta_position_m = [H_PrevAeroBody_CurrAeroBody[0][3], H_PrevAeroBody_CurrAeroBody[1][3], H_PrevAeroBody_CurrAeroBody[2][3]]
-            delta_angle_rad  = np.array( tf.euler_from_matrix(H_PrevAeroBody_CurrAeroBody, 'sxyz'))
-
-            conn.mav.vision_position_delta_send(
-                current_time_us, delta_time_us, delta_angle_rad, delta_position_m, current_confidence_level)
-
-            send_vision_position_delta_message.H_aeroRef_PrevAeroBody = H_aeroRef_aeroBody
-            send_vision_position_delta_message.prev_time_us = current_time_us
 
 def send_vision_speed_estimate_message():
     global current_time_us, V_aeroRef_aeroBody, reset_counter
@@ -310,12 +221,6 @@ def set_default_global_origin():
 
 def set_default_home_position():
     conn.mav.set_home_position_send(1, home_lat, home_lon, home_alt, 0, 0, 0, [1, 0, 0, 0], 0, 0, 1)
-
-def att_msg_callback(value):
-    global heading_north_yaw
-    if heading_north_yaw is None:
-        heading_north_yaw = value.yaw
-        progress("INFO: Received first ATTITUDE message with heading yaw %.2f degrees" % m.degrees(heading_north_yaw))
 
 def increment_reset_counter():
     global reset_counter
@@ -371,7 +276,7 @@ conn = mavutil.mavlink_connection(
     source_component = 93, baud=connection_baudrate, force_connected=True,
 )
 
-mavlink_callbacks = {'ATTITUDE': att_msg_callback}
+mavlink_callbacks = {}
 mavlink_thread = threading.Thread(target=mavlink_loop, args=(conn, mavlink_callbacks))
 mavlink_thread.start()
 
@@ -384,11 +289,6 @@ sched = BackgroundScheduler()
 if enable_msg_vision_position_estimate:
     sched.add_job(send_vision_position_estimate_message, 'interval', seconds = 1/vision_position_estimate_msg_hz)
 
-
-if enable_msg_vision_position_delta:
-    sched.add_job(send_vision_position_delta_message, 'interval', seconds = 1/vision_position_delta_msg_hz)
-    send_vision_position_delta_message.H_aeroRef_PrevAeroBody = tf.quaternion_matrix([1,0,0,0]) 
-    send_vision_position_delta_message.prev_time_us = int(round(time.time() * 1000000))
 
 if enable_msg_vision_speed_estimate:
     sched.add_job(send_vision_speed_estimate_message, 'interval', seconds = 1/vision_speed_estimate_msg_hz)
@@ -417,9 +317,6 @@ def sigterm_handler(sig, frame):
     exit_code = 0
 signal.signal(signal.SIGTERM, sigterm_handler)
 
-if compass_enabled == 1:
-    time.sleep(1)
-
 send_msg_to_gcs('Sending vision messages to FCU')
 packet_size = struct.calcsize("10f")
 
@@ -446,24 +343,14 @@ try:
 
 
             # In transformations, Quaternions w+ix+jy+kz are represented as [w, x, y, z]!
-            H_OAKRef_OAKbody = tf.quaternion_matrix([qw, qx, qy, qz]) 
-            H_OAKRef_OAKbody[0][3] = px * scale_factor
-            H_OAKRef_OAKbody[1][3] = py * scale_factor
-            H_OAKRef_OAKbody[2][3] = pz * scale_factor
-
-
             # Convert Basalt quaternion to Euler angles (rzyx)
             raw_rpy = tf.euler_from_matrix(tf.quaternion_matrix([qw, qx, qy, qz]), 'rzyx')
 
             # Update globals
-            raw_px, raw_py, raw_pz = px, py, pz
-            raw_yaw, raw_pitch, raw_roll = raw_rpy[0], raw_rpy[1], raw_rpy[2] 
-            
-            vision_data_ready = True
+            raw_px, raw_py, raw_pz = px * scale_factor, py * scale_factor, pz * scale_factor
+            raw_yaw, raw_pitch, raw_roll = raw_rpy[0], raw_rpy[1], raw_rpy[2]
 
-            
-            # Transform to aeronautic coordinates (body AND reference frame!)
-            H_aeroRef_aeroBody = H_aeroRef_OAKRef.dot( H_OAKRef_OAKbody.dot( H_OAKbody_aeroBody))
+            vision_data_ready = True
 
             # Calculate GLOBAL XYZ speed
             V_aeroRef_aeroBody = tf.quaternion_matrix([1,0,0,0])
@@ -492,23 +379,10 @@ try:
                 
             prev_data = curr_data_tuple
 
-            if body_offset_enabled == 1:
-                H_body_camera = tf.euler_matrix(0, 0, 0, 'sxyz')
-                H_body_camera[0][3] = body_offset_x
-                H_body_camera[1][3] = body_offset_y
-                H_body_camera[2][3] = body_offset_z
-                H_camera_body = np.linalg.inv(H_body_camera)
-                H_aeroRef_aeroBody = H_body_camera.dot(H_aeroRef_aeroBody.dot(H_camera_body))
-
-            if compass_enabled == 1:
-                H_aeroRef_aeroBody = H_aeroRef_aeroBody.dot( tf.euler_matrix(0, 0, heading_north_yaw, 'sxyz'))
-
             if debug_enable == 1:
                 os.system('clear')
-                progress("DEBUG: Raw RPY[deg]: {}".format( np.array( tf.euler_from_matrix( H_OAKRef_OAKbody, 'sxyz')) * 180 / m.pi))
-                progress("DEBUG: NED RPY[deg]: {}".format( np.array( tf.euler_from_matrix( H_aeroRef_aeroBody, 'sxyz')) * 180 / m.pi))
+                progress("DEBUG: Raw RPY[deg]: {}".format( np.array(raw_rpy) * 180 / m.pi))
                 progress("DEBUG: Raw pos xyz : {}".format( np.array( [px, py, pz])))
-                progress("DEBUG: NED pos xyz : {}".format( np.array( tf.translation_from_matrix( H_aeroRef_aeroBody))))
 
 except Exception as e:
     progress(e)

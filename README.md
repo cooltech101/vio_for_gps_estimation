@@ -47,7 +47,7 @@ Run `basalt_vio.py`. Upon startup, average first few GPS readings to determine s
 ```
 python3 basalt_vio.py & python3 vio_gps_logger.py --csv newLog.csv
 ```
-Optional: use `startall.sh` to conveniently run `basalt_vio.py` and `vio_gps_logger.py` at the same time. Default output csv `dataLog.csv`. Shell script will cleanly terminate the processes upon interruption via Ctrl+C.
+Optional: use `run_gpsvio_logging.sh` to conveniently run `basalt_vio.py` and `vio_gps_logger.py` at the same time. Default output csv `dataLog.csv`. Shell script will cleanly terminate the processes upon interruption via Ctrl+C.
 ```
 ./run_gpsvio_logging.sh
 ```  
