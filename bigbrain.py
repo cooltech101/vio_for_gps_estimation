@@ -123,7 +123,7 @@ scale_calib_enable = args.scale_calib_enable
 debug_enable = args.debug_enable or 0
 sock_path = args.socket
 
-H_aeroRef_OAKRef = np.array([[0,1,0,0],[1,0,0,0],[0,0,-1,0],[0,0,0,1]])
+H_aeroRef_OAKRef = np.array([[-1,0,0,0],[0,1,0,0],[0,0,-1,0],[0,0,0,1]])
 H_OAKBody_aeroBody = np.linalg.inv(H_aeroRef_OAKRef)
 
 if debug_enable == 1:
