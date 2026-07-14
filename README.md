@@ -49,7 +49,7 @@ python3 basalt_vio.py & python3 vio_gps_logger.py --csv newLog.csv
 ```
 Optional: use `startall.sh` to conveniently run `basalt_vio.py` and `vio_gps_logger.py` at the same time. Default output csv `dataLog.csv`. Shell script will cleanly terminate the processes upon interruption via Ctrl+C.
 ```
-./startall.sh
+./run_gpsvio_logging.sh
 ```  
 ### Outdoor Test 1
 Distance covered: 333m
