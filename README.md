@@ -35,6 +35,7 @@ python3 basalt_vio.py --rerun
 - ~20Hz average update rate
 
 (Plots generated in Excel from coordinates logged in csv file)
+
 <img src="vioPlots/indoor1.png" alt="Photo" width="45%">
 
 ## 5. Use Basalt VIO to estimate GPS pose (2D)
