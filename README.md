@@ -76,7 +76,7 @@ N.B. if VIO was run earlier, object tracking will fail because old depthAI pipel
 
 ## 7. Send VIO pose to Ardupilot flight controller over Mavlink
 - Connect host controller UART to flight controller TELEM2 port
-- Configure the relevant Ardupilot parameters https://ardupilot.org/copter/docs/common-vio-tracking-camera.html#hardware-setup
+- Configure the relevant Ardupilot parameters as described here https://ardupilot.org/copter/docs/common-vio-tracking-camera.html#hardware-setup
 - Ensure `SERIAL2_OPTIONS = 0`
 - Set `VISO_TYPE = 1` (Mavlink)
 - Open Mission Planner and connect to the flight controller 
