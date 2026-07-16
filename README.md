@@ -77,9 +77,9 @@ N.B. if VIO was run earlier, object tracking will fail because old depthAI pipel
 ## 7. Send VIO pose to Ardupilot flight controller over Mavlink
 - Connect host controller UART to flight controller TELEM2 port
 - Configure the relevant Ardupilot parameters https://ardupilot.org/copter/docs/common-vio-tracking-camera.html#hardware-setup
-- Ensure SERIAL2_OPTIONS = 0
-- Set VISO_TYPE = 1 (Mavlink)
-- Open Mission Planner and connect to the flight controller
+- Ensure `SERIAL2_OPTIONS = 0`
+- Set `VISO_TYPE = 1` (Mavlink)
+- Open Mission Planner and connect to the flight controller 
 - Right click on the map to set EKF origin (VIO 0,0,0) at desired point
 
 Last, run Basalt VIO and forward visual pose to Mavlink.
@@ -92,8 +92,8 @@ Path traversed should be displayed as a purple track on Mission Planner. To view
 ## 8. Automatically switch between GPS and VIO pose using Ardupilot's EKF3
 - As before, connect host controller UART to the Cube Orange TELEM2 port
 - Store the automatic EKF source switching `gps_vio_autoswitch.lua` Lua script in the flight controller SD card in root/APM/scripts/
-- Load the parameter file `gpsVIO_luaswitch_cubeOrange_params.param` which contains all the parameters in https://ardupilot.org/copter/docs/common-vio-tracking-camera.html#hardware-setup and https://ardupilot.org/copter/docs/common-non-gps-to-gps.html
-- In the parameter file, GPS threshold SCR_USER2 = 1.2 and VIO threshold SCR_USER3 = 0.3. Thresholds control how much to trust each EKF source. Adjust as needed.
+- Load the parameter file `gpsVIO_luaswitch_cubeOrange_params.param` which contains all the required parameter configurations in https://ardupilot.org/copter/docs/common-vio-tracking-camera.html#hardware-setup and https://ardupilot.org/copter/docs/common-non-gps-to-gps.html
+- In the parameter file, GPS threshold `SCR_USER2 = 1.2` and VIO threshold `SCR_USER3 = 0.3`. Thresholds control how much to trust each EKF source. Adjust as needed.
 - Open Mission Planner and connect to the flight controller with GPS disconnected
 - Right click on the map to set EKF origin (VIO 0,0,0) at desired point
 - Reconnect GPS
