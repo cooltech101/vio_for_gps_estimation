@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """
-BasaltVIO alternative to the VINS-Fusion + feature_tracker stack.
+BasaltVIO 
+
+Perform VIO and publish local pose estimates to a mavlink socket
 
     python3 basalt_vio.py [path/to/oak_d_w.yaml]
 """

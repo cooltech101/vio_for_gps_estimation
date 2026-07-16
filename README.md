@@ -63,7 +63,22 @@ Distance covered: 507m
 <img src="vioPlots/outdoor1.png" alt="Photo" width="45%">
 
 
-## 6. Run simple object tracking
+## 6. Send VIO pose to Mission Planner over Mavlink
+- Connect host controller UART to flight controller TELEM2 port
+- Configure the relevant Ardupilot parameters https://ardupilot.org/copter/docs/common-vio-tracking-camera.html#hardware-setup
+- Ensure SERIAL2_OPTIONS = 0
+- Set VISO_TYPE = 1 (Mavlink)
+- Open Mission Planner and connect to the flight controller
+- Right click on the map to set EKF origin (VIO 0,0,0) at desired point
+
+Run Basalt VIO and forward visual pose to Mavlink.
+```
+./run_viotomavlink.sh
+```
+
+Path traversed should be displayed as a purple track on Mission Planner. To view the xyz VIO pose received by Mission Planner, Ctrl+F -> Mavlink Inspector -> Vision Position Estimates. 
+
+## 7. Run simple object tracking
 YOLOv6-nano run on OAK-D with visualizer.
 ```
 python3 object_tracker.py
@@ -72,7 +87,7 @@ Run object tracking and VIO estimation simultaneously.
 ```
 python3 vio_objtrack.py
 ```
-## 7. Helper scripts
+## 8. Helper scripts
 Print received GPS coordinates and IMU yaw to terminal. Flight controller and GPS module needed. 
 ```
 python3 read_gps_yaw.py
@@ -81,7 +96,7 @@ To print GPS coordinates only
 ```
 python3 read_gps.py
 ```
-## 8. Notes
+## 9. Notes
 If VIO was run earlier, object tracking will fail because old depthAI pipeline is still active. Reboot host controller, then run object tracking. 
 
 
