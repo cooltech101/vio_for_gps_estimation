@@ -1,5 +1,5 @@
 # Basalt VIO for GPS 2D Pose Estimation
-Use OAK-D wide stereo camera to conduct Visual Inertial Odometry and simple object detection. 
+Use OAK-D wide stereo camera to conduct Visual Inertial Odometry and simple object detection. Also tested with OAK-D Lite.
 
 ## 1. Create new target directory and clone repo
 ```
