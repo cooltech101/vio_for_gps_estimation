@@ -40,12 +40,12 @@ python3 basalt_vio.py --rerun
 
 ## 5. Use Basalt VIO to estimate GPS pose (2D)
 ### Manual initialisation 
-Run `basalt_vio.py`. Listen for VIO pose packets over Mavlink socket. Manually set starting lat lon and heading in lines 17-19 of `vio_translate_logger.py` which will be used to initialise VIO. Using initialisation, script converts local xy coordinates in metres into GPS lat lon coordinates in decimal degrees. Log estimated GPS pose entries to csv file of choice using --csv flag. No flight controller or GPS module needed.
+Run `basalt_vio.py`. Listen for VIO pose packets over Mavlink socket. Manually set starting lat lon and heading in lines 17-19 of `vio_translate_logger.py` which will be used to initialise VIO. Using initial pose, script converts local xy coordinates in metres into GPS lat lon coordinates in decimal degrees. Log estimated GPS pose entries to csv file of choice using --csv flag. No flight controller or GPS module needed.
 ```
 python3 basalt_vio.py & python3 vio_translate_logger.py --csv newLog.csv
 ```
 ### Automatic initialisation (GPS signal required)
-Run `basalt_vio.py`. Upon execution, `vio_gps_logger.py` averages the first few GPS readings to determine starting coordinates. Use this pose as initial VIO offset and compass yaw as initial heading. Listen for VIO pose packets over Mavlink socket. Log live GPS and heading for each VIO-derived GPS estimate and log entries to csv file of choice using --csv flag. Flight controller and GPS module needed. 
+Run `basalt_vio.py`. Upon execution, `vio_gps_logger.py` waits 3s for GPS readings to settle, then averages the next few GPS readings to determine starting coordinates. Its uses this pose together with the compass yaw to initialise the VIO. Script listens for VIO pose packets over Mavlink socket. Log live GPS and heading for each VIO-derived GPS estimate and log entries to csv file of choice using --csv flag. Flight controller and GPS module needed. 
 ```
 python3 basalt_vio.py & python3 vio_gps_logger.py --csv newLog.csv
 ```
