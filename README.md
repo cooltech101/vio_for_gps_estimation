@@ -45,7 +45,7 @@ Run `basalt_vio.py`. Listen for VIO pose packets over Mavlink socket. Manually s
 python3 basalt_vio.py & python3 vio_translate_logger.py --csv newLog.csv
 ```
 ### Automatic initialisation (GPS signal required)
-Connect the flight controller Debug port to the host controller via USB. Run `basalt_vio.py`. Upon execution, `vio_gps_logger.py` waits 3s for GPS readings to settle, then averages the next few GPS readings to determine starting coordinates. This pose together with the compass yaw is used to initialise the VIO. Script listens for VIO pose packets over Mavlink socket. Log live GPS coordinates for each VIO-derived GPS estimate to a csv file of choice using --csv flag. Flight controller and GPS module needed. 
+Connect the flight controller Debug port to the host controller via USB. Run `basalt_vio.py`. Upon execution, `vio_gps_logger.py` waits 3s for GPS readings to settle, then averages the next 2s of GPS readings to determine starting coordinates. This pose together with the compass yaw is used to initialise the VIO. Script listens for VIO pose packets over Mavlink socket. Log live GPS coordinates for each VIO-derived GPS estimate to a csv file of choice using --csv flag. Flight controller and GPS module needed. 
 ```
 python3 basalt_vio.py & python3 vio_gps_logger.py --csv newLog.csv
 ```
@@ -90,8 +90,8 @@ Last, run Basalt VIO and forward visual position estimates to Mavlink.
 
 Path traversed should be displayed as a purple track on Mission Planner. To view the xyz VIO pose received by Mission Planner, Ctrl+F -> Mavlink Inspector -> Vision Position Estimates. 
 
-## 8. Automatically switch between GPS and VIO pose using Ardupilot's EKF3
-- As before, connect host controller UART to the Cube Orange TELEM2 port
+## 8. Automatically switch between GPS and VIO pose using Ardupilot's EKF3 (Cube Orange)
+- As before, connect host controller UART to the flight controller TELEM2 port
 - Store the automatic EKF source switching `gps_vio_autoswitch.lua` Lua script in the flight controller SD card in root/APM/scripts/
 - Load the parameter file `gpsVIO_luaswitch_cubeOrange_params.param` which contains all the required parameter configurations in https://ardupilot.org/copter/docs/common-vio-tracking-camera.html#hardware-setup and https://ardupilot.org/copter/docs/common-non-gps-to-gps.html
 - In the parameter file, GPS threshold `SCR_USER2 = 1.2` and VIO threshold `SCR_USER3 = 0.3`. Thresholds control how much to trust each EKF source. Adjust as needed.
