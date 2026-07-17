@@ -1,5 +1,5 @@
 # Basalt VIO for GPS 2D Pose Estimation
-Use OAK-D wide stereo camera to conduct Visual Inertial Odometry and simple object detection. Also tested with OAK-D Lite. Host controller used was the Raspberry Pi 5. Proper 5V 5A power supply is required to power the OAK-D and flight controller simultaneously from the Rasberry Pi's USB ports. VIO pose estimates can be sent to a flight controller via Mavlink and received by a laptop ground station. 
+Use OAK-D wide stereo camera to conduct Visual Inertial Odometry and simple object detection. Also tested with OAK-D Lite. Host controller used was the Raspberry Pi 5. Proper 5V 5A power supply is required to power the OAK-D and flight controller simultaneously from the Rasberry Pi's USB ports. VIO pose estimates can be sent to a flight controller via Mavlink and received by a laptop ground station running Mission Planner. 
 
 ## 1. Create new target directory and clone repo
 ```
@@ -80,10 +80,10 @@ N.B. if VIO was run earlier, object tracking will fail because old depthAI pipel
 - Configure the relevant Ardupilot parameters as described here https://ardupilot.org/copter/docs/common-vio-tracking-camera.html#hardware-setup
 - Ensure `SERIAL2_OPTIONS = 0`
 - Set `VISO_TYPE = 1` (Mavlink)
-- Open Mission Planner and connect to the flight controller 
+- Open Mission Planner and connect to the flight controller over USB
 - Right click on the map to set EKF origin (VIO 0,0,0) at desired point
 
-Last, run Basalt VIO and forward visual pose to Mavlink.
+Last, run Basalt VIO and forward visual position estimates to Mavlink.
 ```
 ./run_viotomavlink.sh
 ```
@@ -99,14 +99,14 @@ Path traversed should be displayed as a purple track on Mission Planner. To view
 - Right click on the map to set EKF origin (VIO 0,0,0) at desired point
 - Reconnect GPS
 
-Last, run Basalt VIO and forward visual pose to Mavlink.
+Last, run Basalt VIO and forward visual position estimates to Mavlink.
 ```
 ./run_viotomavlink.sh
 ```
 
 N.B. Cube Black does not have sufficient EKF memory to execute this function
 
-## 9. Helper scripts
+## 9. Debug scripts
 Check if flight controller is receiving GPS coordinates and compass yaw by printing the values to terminal. 
 ```
 python3 read_gps_yaw.py
