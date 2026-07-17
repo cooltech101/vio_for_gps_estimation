@@ -85,6 +85,10 @@ N.B. if VIO was run earlier, object tracking will fail because old depthAI pipel
 
 Last, run Basalt VIO and forward visual position estimates to Mavlink.
 ```
+python3 basalt_vio.py & python3 vio_to_mavlink.py 
+```
+Or more conveniently 
+```
 ./run_viotomavlink.sh
 ```
 
