@@ -7,3 +7,4 @@ mav.tlog
 mav.tlog.raw
 test/
 __pycache__/
+test.py

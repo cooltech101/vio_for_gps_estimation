@@ -40,11 +40,11 @@ python3 basalt_vio.py --rerun
 
 ## 5. Use Basalt VIO to estimate GPS pose (2D)
 
-Run `basalt_vio.py`. Listen for VIO pose packets over Mavlink socket. Manually set starting lat lon and heading in lines 17-19 and use these values to initialise VIO. Using initialisation, script converts local xy coordinates into GPS lat lon coordinates in decimal degrees. Log estimated GPS pose entries to csv file of choice using --csv flag. No flight controller or GPS module needed. 
+Run `basalt_vio.py`. Listen for VIO pose packets over Mavlink socket. Manually set starting lat lon and heading in lines 17-19 of `vio_translate_logger.py` which will be used to initialise VIO. Using initialisation, script converts local xy coordinates in metres into GPS lat lon coordinates in decimal degrees. Log estimated GPS pose entries to csv file of choice using --csv flag. No flight controller or GPS module needed. 
 ```
 python3 basalt_vio.py & python3 vio_translate_logger.py --csv newLog.csv
 ```
-Run `basalt_vio.py`. Upon startup, average first few GPS readings to determine starting pose. Use this pose as initial VIO offset. Listen for VIO pose packets over Mavlink socket. Log live GPS and heading for each VIO-derived GPS estimate and log entries to csv file of choice using --csv flag. Flight controller and GPS module needed. 
+Run `basalt_vio.py`. Upon execution, `vio_gps_logger.py` averages the first few GPS readings to determine starting coordinates. Use this pose as initial VIO offset and compass yaw as initial heading. Listen for VIO pose packets over Mavlink socket. Log live GPS and heading for each VIO-derived GPS estimate and log entries to csv file of choice using --csv flag. Flight controller and GPS module needed. 
 ```
 python3 basalt_vio.py & python3 vio_gps_logger.py --csv newLog.csv
 ```
@@ -106,7 +106,7 @@ Last, run Basalt VIO and forward visual pose to Mavlink.
 N.B. Cube Black does not have sufficient EKF memory to execute this function
 
 ## 9. Helper scripts
-Print received GPS coordinates and IMU yaw to terminal. Flight controller and GPS module needed. 
+Check if flight controller is receiving GPS coordinates and compass yaw by printing the values to terminal. 
 ```
 python3 read_gps_yaw.py
 ```
