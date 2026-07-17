@@ -1,5 +1,5 @@
 # Basalt VIO for GPS 2D Pose Estimation
-Use OAK-D wide stereo camera to conduct Visual Inertial Odometry and simple object detection. Also tested with OAK-D Lite.
+Use OAK-D wide stereo camera to conduct Visual Inertial Odometry and simple object detection. Also tested with OAK-D Lite. Host controller used was the Raspberry Pi 5. Proper 5V 5A power supply is required to power the OAK-D and flight controller simultaneously from the Rasberry Pi's USB ports. VIO pose estimates can be sent to a flight controller via Mavlink and received by a laptop ground station. 
 
 ## 1. Create new target directory and clone repo
 ```
@@ -45,7 +45,7 @@ Run `basalt_vio.py`. Listen for VIO pose packets over Mavlink socket. Manually s
 python3 basalt_vio.py & python3 vio_translate_logger.py --csv newLog.csv
 ```
 ### Automatic initialisation (GPS signal required)
-Run `basalt_vio.py`. Upon execution, `vio_gps_logger.py` waits 3s for GPS readings to settle, then averages the next few GPS readings to determine starting coordinates. Its uses this pose together with the compass yaw to initialise the VIO. Script listens for VIO pose packets over Mavlink socket. Log live GPS and heading for each VIO-derived GPS estimate and log entries to csv file of choice using --csv flag. Flight controller and GPS module needed. 
+Connect the flight controller Debug port to the host controller via USB. Run `basalt_vio.py`. Upon execution, `vio_gps_logger.py` waits 3s for GPS readings to settle, then averages the next few GPS readings to determine starting coordinates. This pose together with the compass yaw is used to initialise the VIO. Script listens for VIO pose packets over Mavlink socket. Log live GPS coordinates for each VIO-derived GPS estimate to a csv file of choice using --csv flag. Flight controller and GPS module needed. 
 ```
 python3 basalt_vio.py & python3 vio_gps_logger.py --csv newLog.csv
 ```
@@ -64,7 +64,7 @@ Distance covered: 507m
 <img src="vioPlots/outdoor1.png" alt="Photo" width="45%">
 
 ## 6. Run simple object tracking
-YOLOv6-nano run on OAK-D with visualizer.
+YOLOv6-nano run on OAK-D with visualiser GUI.
 ```
 python3 object_tracker.py
 ```
