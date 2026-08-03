@@ -110,7 +110,36 @@ Last, run Basalt VIO and forward visual position estimates to Mavlink.
 
 N.B. Cube Black does not have sufficient EKF memory to execute this function
 
-## 9. Debug scripts
+## 9. WFB from drone Raspberry Pi to Ubuntu laptop GCS
+Refer to WFB setup on drone Raspberry Pi and Ubuntu GCS [here](https://github.com/cyuquan8/simple_payload_autonomy_nr).
+
+**On GCS:**
+Start WFB:
+```
+sudo systemctl start wifibroadcast@gs
+```
+Start either QGroundControl or MissionPlanner and connect to UDP port of choice. Running `wfb-cli gs` should show both rx and tx tunnels if the drone side is also active. 
+
+**On drone Pi:**
+Start WFB:
+```
+sudo systemctl start wifibroadcast@drone
+```
+Running `wfb-cli gs` should show both rx and tx tunnels if the GS side is also active.
+
+With Pi connected to the FCU TELEM2 port, use `mavproxy` to establish bidirectional communication between WFB and the FCU. Replace the 'X' with the correct drone UDP port assigned in `/etc/wifibroadcast.cfg`.
+```
+mavproxy.py --master=/dev/ttyAMA0,921600 --out=udp:127.0.0.1:1455<X>
+```
+
+To have bidirectional communication between WFB and the FCU, while simultaneously injecting VIO estimates to the FCU over the same UART connection:
+```
+python3 basalt_vio.py &
+python3 basalt_over_wfb.py --connect /dev/ttyAMA0 --baudrate 921600 --out udp:127.0.0.1:1455<X>
+```
+
+
+## 10. Debug scripts
 Check if flight controller is receiving GPS coordinates and compass yaw by printing the values to terminal. 
 ```
 python3 read_gps_yaw.py
