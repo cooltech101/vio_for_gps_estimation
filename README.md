@@ -118,21 +118,21 @@ Start WFB:
 ```
 sudo systemctl start wifibroadcast@gs
 ```
-Start either QGroundControl or MissionPlanner and connect to UDP port of choice. Running `wfb-cli gs` should show both rx and tx tunnels if the drone side is also active. 
+Start either QGroundControl or MissionPlanner and connect to the same UDP port as the drone. Running `wfb-cli gs` should show both rx and tx tunnels if the drone side is also active. 
 
 **On drone Pi:**
 Start WFB:
 ```
 sudo systemctl start wifibroadcast@drone
 ```
-Running `wfb-cli gs` should show both rx and tx tunnels if the GS side is also active.
+Running `wfb-cli drone` should show both rx and tx tunnels if the GS side is also active.
 
 With Pi connected to the FCU TELEM2 port, use `mavproxy` to establish bidirectional communication between WFB and the FCU. Replace the 'X' with the correct drone UDP port assigned in `/etc/wifibroadcast.cfg`.
 ```
 mavproxy.py --master=/dev/ttyAMA0,921600 --out=udp:127.0.0.1:1455<X>
 ```
 
-To have bidirectional communication between WFB and the FCU, while simultaneously injecting VIO estimates to the FCU over the same UART connection:
+To have bidirectional communication between WFB and the FCU, while simultaneously injecting Basalt VIO estimates to the FCU over the same UART connection:
 ```
 python3 basalt_vio.py &
 python3 basalt_over_wfb.py --connect /dev/ttyAMA0 --baudrate 921600 --out udp:127.0.0.1:1455<X>
